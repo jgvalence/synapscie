@@ -5,6 +5,41 @@
 Les étapes 1, 2 et 5 suffisent à mettre le site en ligne. Les étapes 3 et 4
 activent l'interface d'administration, l'étape 6 le formulaire de contact.
 
+## État actuel : hébergement provisoire
+
+Le site tourne sous un compte personnel en attendant que l'association crée son
+organisation GitHub :
+
+- dépôt `jgvalence/synapscie`, adresse **https://jgvalence.github.io/synapscie/**
+- étapes 1 et 2 faites, sous ce compte
+- étapes 3, 4 et 6 volontairement non faites : voir plus bas
+
+**Rédiger sans l'admin en ligne.** Les étapes 3 et 4 (OAuth App + worker
+Cloudflare) sont liées au domaine et au nom du dépôt : les monter maintenant
+obligerait à les refaire après le transfert. En attendant, Sveltia sait éditer
+les fichiers du disque sans aucune authentification — voir « Tester l'admin sans
+les étapes 3 et 4 » à la fin de ce document. Même interface, mêmes formulaires.
+
+**L'étape 6 n'est pas nécessaire non plus** tant que le site affiche seulement
+l'adresse de courriel. Elle n'a aucun lien avec le domaine : elle peut se faire
+avant comme après le transfert.
+
+### Passer à l'organisation, le moment venu
+
+1. Créer l'organisation `SynapScie` (étape 1), puis, sur le dépôt actuel,
+   **Settings → General → Transfer ownership** vers elle.
+2. Le renommer en `synapscie.github.io` pour retrouver une adresse racine.
+3. Dans `astro.config.mjs` : `site: 'https://synapscie.github.io'` et supprimer
+   la ligne `base`.
+4. Dans `public/admin/config.yml` : `repo`, `site_url`, `display_url`.
+5. Réactiver Pages (étape 2), le transfert ne le conserve pas.
+6. Si le formulaire était activé, vérifier que le secret `CLE_FORMULAIRE` a
+   suivi. La redirection `/merci`, elle, se recalcule seule.
+7. Faire les étapes 3, 4 et 5 pour ouvrir l'admin aux rédacteurs.
+
+L'historique des commits et les anciennes adresses suivent le transfert, GitHub
+pose une redirection.
+
 ## 1. Créer l'organisation et le dépôt
 
 Sur GitHub : **New organization**, offre gratuite, nom `SynapScie`. Une
