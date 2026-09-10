@@ -13,6 +13,11 @@ interface Props {
   rond?: boolean;
 
   niveau?: 'h2' | 'h3';
+
+  /** Vrai pour la premiere image d'une page, celle qui s'affiche sans faire
+      defiler. La charger paresseusement retarderait le plus gros element de
+      l'ecran, donc le temps d'affichage percu. Faux partout ailleurs. */
+  prioritaire?: boolean;
 }
 
 const {
@@ -24,6 +29,7 @@ const {
   legende,
   rond = false,
   niveau = 'h2',
+  prioritaire = false,
 } = Astro.props;
 
 const Titre = niveau;
@@ -37,7 +43,8 @@ const Titre = niveau;
       sizes="(min-width: 48rem) 45vw, 100vw"
       formats={['avif', 'webp']}
       fallbackFormat="jpeg"
-      loading="lazy"
+      loading={prioritaire ? 'eager' : 'lazy'}
+      fetchpriority={prioritaire ? 'high' : undefined}
       decoding="async"
     />
     {legende && <figcaption>{legende}</figcaption>}

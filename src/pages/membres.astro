@@ -34,6 +34,7 @@ const membres = (await getCollection('membres')).sort(
 
                 position_image={i % 2 === 0 ? 'gauche' : 'droite'}
                 rond
+                prioritaire={i === 0}
               />
             ) : (
               <div class="membre-sans-photo mesure">
