@@ -45,6 +45,14 @@ const annee = new Date().getFullYear();
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_FR" />
+
+    {/* Seul script inline du site, et il doit le rester : il applique le theme
+        choisi avant le premier rendu. Bundle, donc differe, la page s'afficherait
+        dans le theme du systeme puis basculerait sous les yeux du visiteur.
+        Garde nu pour cette raison : chaque octet part sur toutes les pages. */}
+    <script is:inline>
+      try{var t=localStorage.getItem('theme');if(t==='clair'||t==='sombre')document.documentElement.dataset.theme=t}catch(e){}
+    </script>
   </head>
   <body>
     <a class="saut-contenu" href="#contenu">Aller au contenu principal</a>
@@ -52,22 +60,41 @@ const annee = new Date().getFullYear();
     <header class="entete">
       <div class="conteneur entete__interieur">
         <a class="entete__logo" href={lien('/')}>{ASSO.nom}</a>
-        <nav class="nav" aria-label="Navigation principale">
-          <ul>
-            {
-              PAGES.map((page) => (
-                <li>
-                  <a
-                    href={lien(page.url)}
-                    aria-current={estCourante(page.url) ? 'page' : undefined}
-                  >
-                    {page.libelle}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
+        <div class="entete__droite">
+          <nav class="nav" aria-label="Navigation principale">
+            <ul>
+              {
+                PAGES.map((page) => (
+                  <li>
+                    <a
+                      href={lien(page.url)}
+                      aria-current={estCourante(page.url) ? 'page' : undefined}
+                    >
+                      {page.libelle}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+
+          {/* `hidden` par defaut : sans JavaScript le bouton ne ferait rien,
+              autant ne pas l'afficher. Le script de fin de page le revele. */}
+          <button type="button" class="bascule-theme" id="bascule-theme" hidden>
+            <svg
+              class="bascule-theme__icone"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" />
+              <path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" />
+            </svg>
+            <span class="lecteur-ecran" data-libelle>Changer de thème</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -83,5 +110,54 @@ const annee = new Date().getFullYear();
         )}
       </div>
     </footer>
+
+    {/* Celui-ci n'a pas besoin d'etre inline : le bouton part `hidden` et
+        n'apparait qu'une fois le script charge. Astro le compile donc dans un
+        fichier minifie et mis en cache, plutot que de le repeter sur chaque
+        page. Il ne bloque pas l'affichage. */}
+    <script>
+      (function () {
+        const bouton = document.getElementById('bascule-theme');
+        const libelle = bouton?.querySelector('[data-libelle]');
+        if (!bouton || !libelle) return;
+        const racine = document.documentElement;
+
+        // Sans choix explicite, le theme affiche est celui du systeme : c'est
+        // lui qu'il faut lire pour savoir vers quoi le bouton bascule.
+        const themeAffiche = () =>
+          racine.dataset.theme ||
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'sombre' : 'clair');
+
+        // Flechees et declarees apres la garde ci-dessus : une `function`
+        // hoistee ferait perdre a TypeScript le fait que les deux elements
+        // existent, puisqu'elle pourrait etre appelee avant la verification.
+        const etiqueter = () => {
+          const texte = 'Passer au thème ' + (themeAffiche() === 'sombre' ? 'clair' : 'sombre');
+          libelle.textContent = texte;
+          bouton.title = texte;
+        };
+
+        bouton.hidden = false;
+        etiqueter();
+
+        bouton.addEventListener('click', function () {
+          const vers = themeAffiche() === 'sombre' ? 'clair' : 'sombre';
+          racine.dataset.theme = vers;
+          try {
+            localStorage.setItem('theme', vers);
+          } catch (e) {
+            // Stockage refuse : la bascule vaut pour la page courante et le
+            // reglage du systeme reprendra la main a la prochaine visite.
+          }
+          etiqueter();
+        });
+
+        // Tant que le visiteur n'a rien choisi, suivre le systeme s'il change
+        // (bascule automatique jour/nuit d'Android, macOS, Windows).
+        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+          if (!racine.dataset.theme) etiqueter();
+        });
+      })();
+    </script>
   </body>
 </html>

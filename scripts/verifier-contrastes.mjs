@@ -67,6 +67,43 @@ if (iSombre === -1) {
 const sombre = blocRacine(css, iSombre);
 if (!sombre) throw new Error('Le bloc sombre ne contient pas de :root');
 
+/* Le theme sombre existe en deux exemplaires dans global.css : le @media
+   ci-dessus, qui suit le systeme, et :root[data-theme='sombre'], qu'active le
+   bouton de bascule. CSS ne sait pas partager un corps de regle entre un
+   @media et un selecteur ordinaire, la duplication est donc inevitable.
+   On verifie ici qu'ils declarent exactement les memes jetons : sans ce
+   controle, modifier une couleur dans l'un et pas dans l'autre donnerait deux
+   themes sombres differents selon la facon dont il a ete active. */
+const SELECTEUR_FORCE = ":root[data-theme='sombre']";
+const iForce = css.indexOf(SELECTEUR_FORCE);
+if (iForce === -1) {
+  throw new Error(
+    `Aucun bloc ${SELECTEUR_FORCE} trouve : le theme sombre choisi au bouton ` +
+      'ne serait plus verifie.',
+  );
+}
+const blocForce = corpsDuBloc(css, iForce);
+if (!blocForce) throw new Error(`Le bloc ${SELECTEUR_FORCE} est mal forme.`);
+
+const jetonsForces = declarations(blocForce.corps);
+const ecarts = [];
+for (const nom of new Set([...Object.keys(sombre.jetons), ...Object.keys(jetonsForces)])) {
+  const a = sombre.jetons[nom];
+  const b = jetonsForces[nom];
+  if (a !== b) {
+    // `nom` porte deja son prefixe `--`, declarations() le conserve.
+    ecarts.push(`  ${nom}\n    @media : ${a ?? 'absent'}\n    bouton : ${b ?? 'absent'}`);
+  }
+}
+if (ecarts.length > 0) {
+  console.error(
+    `\nLes deux blocs du theme sombre divergent sur ${ecarts.length} jeton(s).\n` +
+      `Ils doivent rester identiques mot pour mot (voir la section 3 de\n` +
+      `src/styles/global.css).\n\n${ecarts.join('\n')}\n`,
+  );
+  process.exit(1);
+}
+
 const THEMES = {
   clair: clair.jetons,
   sombre: { ...clair.jetons, ...sombre.jetons },

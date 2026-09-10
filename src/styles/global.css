@@ -58,20 +58,32 @@
   --e-5: 2.5rem;
   --e-6: 4rem;
 
-  --largeur-max: 68rem;
+  /* Largeur des sections. La prose n'y touche pas : elle reste bornee a
+     --largeur-texte par la classe .mesure, pour garder des lignes lisibles. */
+  --largeur-max: 75rem;
   --largeur-texte: 40rem;
   --rayon: 6px;
 }
 
 /* ===========================================================================
    3. ROLES - theme sombre
-   Suit le reglage du systeme d'exploitation. Aucun JavaScript, aucun stockage.
    Seuls les jetons de couleur changent : la mise en page est identique.
    Sur fond sombre la primaire de marque devient trop peu contrastee pour
    ecrire dessus, d'ou des melanges vers le blanc et non vers le noir.
+
+   Le sombre s'applique dans deux cas :
+     - le systeme est en sombre et le visiteur n'a pas force le clair ;
+     - le visiteur a choisi le sombre avec le bouton de bascule.
+
+   CSS ne sait pas partager un corps de regle entre un @media et un selecteur
+   ordinaire : les deux listes ci-dessous sont donc identiques, mot pour mot.
+   verifier-contrastes.mjs les compare et echoue si elles divergent d'un seul
+   jeton, pour qu'on ne puisse pas en modifier une en oubliant l'autre.
    =========================================================================== */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='clair']) {
+    color-scheme: dark;
+
     --texte: #e9ebed;
     --texte-doux: #aab2b9;
     --fond: #14171a;
@@ -94,6 +106,40 @@
     --secondaire-trait: color-mix(in srgb, var(--marque-secondaire) 85%, #ffffff);
     --secondaire-voile: color-mix(in srgb, var(--marque-secondaire) 12%, var(--fond));
   }
+}
+
+/* Le sombre choisi explicitement, sur un systeme en clair. Copie conforme du
+   bloc ci-dessus : toute modification va dans les deux. */
+:root[data-theme='sombre'] {
+  color-scheme: dark;
+
+  --texte: #e9ebed;
+  --texte-doux: #aab2b9;
+  --fond: #14171a;
+  --fond-doux: #1d2125;
+  --trait: #79818a;
+  --trait-leger: #313940;
+  --focus: #f2f5f7;
+  --lien-visite: #cba6e8;
+
+  --primaire-lisible: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
+  --primaire-fort: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
+  --primaire-voile: color-mix(in srgb, var(--marque-primaire) 20%, var(--fond));
+
+  /* L'aplat plein s'eclaircit et porte du texte sombre : un aplat de la
+     primaire de marque serait presque invisible sur un fond noir. */
+  --primaire-aplat: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
+  --primaire-aplat-texte: var(--fond);
+  --primaire-aplat-survol: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
+
+  --secondaire-trait: color-mix(in srgb, var(--marque-secondaire) 85%, #ffffff);
+  --secondaire-voile: color-mix(in srgb, var(--marque-secondaire) 12%, var(--fond));
+}
+
+/* Le clair choisi explicitement : les jetons de :root suffisent, il n'y a que
+   color-scheme a forcer pour que barres de defilement et champs suivent. */
+:root[data-theme='clair'] {
+  color-scheme: light;
 }
 
 /* ===========================================================================
@@ -157,8 +203,13 @@ img { max-width: 100%; height: auto; display: block; }
 /* Declare apres le theme sombre : ces surcharges doivent gagner dans les deux
    themes. Les var() se resolvent a l'usage, donc --texte vaut bien ici la
    valeur du theme actif. */
+/* Declare apres les trois blocs de theme, ET a leur specificite : `:root` seul
+   (0,1,0) perdrait contre `:root[data-theme='sombre']` (0,2,0), et un visiteur
+   en contraste renforce qui a force le sombre au bouton n'aurait plus la
+   surcharge. `:root[data-theme]` egalise, l'ordre du fichier tranche. */
 @media (prefers-contrast: more) {
-  :root { --texte-doux: var(--texte); --trait-leger: var(--trait); }
+  :root,
+  :root[data-theme] { --texte-doux: var(--texte); --trait-leger: var(--trait); }
 }
 
 .conteneur {
@@ -202,6 +253,36 @@ img { max-width: 100%; height: auto; display: block; }
   gap: var(--e-3);
   padding-block: var(--e-3);
 }
+.entete__droite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-3);
+}
+
+/* Cible de 44 px comme les autres controles du site, meme si l'icone en fait
+   20 : c'est la zone cliquable qui compte, pas le dessin. */
+.bascule-theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--rayon);
+  background: none;
+  color: var(--texte);
+  cursor: pointer;
+}
+.bascule-theme:hover {
+  background: var(--primaire-voile);
+  border-color: var(--primaire-lisible);
+}
+.bascule-theme__icone {
+  display: block;
+}
+
 .entete__logo {
   font-size: var(--t-l);
   font-weight: 700;

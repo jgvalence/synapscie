@@ -69,8 +69,23 @@ permanence.
 
 ### Thème sombre
 
-Le site suit le réglage du système via `@media (prefers-color-scheme: dark)`.
-Pas de bouton de bascule, donc ni script ni stockage sur les pages publiques.
+Par défaut le site suit le réglage du système via
+`@media (prefers-color-scheme: dark)`. Un bouton dans l'en-tête permet de forcer
+l'autre thème, et le choix est retenu dans `localStorage`.
+
+Le sombre est donc déclaré **deux fois** dans `global.css` : sous le `@media`
+pour le réglage système, et sous `:root[data-theme='sombre']` pour le choix au
+bouton. CSS ne sait pas partager un corps de règle entre un `@media` et un
+sélecteur ordinaire. Pour que les deux copies ne divergent jamais,
+`verifier:contrastes` les compare jeton par jeton et échoue à la moindre
+différence — une couleur modifiée d'un seul côté ne peut pas être mise en ligne.
+
+Deux scripts en découlent, tous deux dans `Base.astro` :
+
+| Script | Où | Pourquoi là |
+| --- | --- | --- |
+| lecture du choix stocké | inline dans le `<head>`, 132 o | doit s'exécuter avant le premier rendu, sinon la page s'affiche dans le thème système puis bascule sous les yeux du visiteur |
+| logique du bouton | module compilé, 596 o minifié | ne bloque pas l'affichage ; le bouton part `hidden` et n'apparaît qu'une fois le script exécuté, donc sans JavaScript il n'y a pas de commande morte |
 
 Sur fond sombre, la primaire de marque est trop peu contrastée pour porter du
 texte : les rôles sont mélangés vers le blanc au lieu du noir, et l'aplat plein
@@ -148,8 +163,10 @@ Cible : RGAA 4.1, équivalent WCAG 2.1 niveau AA.
   `aria-describedby`. Pas de captcha, mais un piège à robots invisible et hors
   du parcours clavier.
 - `prefers-reduced-motion`, `prefers-contrast` et `prefers-color-scheme`
-  respectés. Les surcharges de `prefers-contrast` sont déclarées après le thème
-  sombre, pour gagner dans les deux thèmes.
+  respectés. Les surcharges de `prefers-contrast` sont déclarées après les blocs
+  de thème **et à leur spécificité** (`:root, :root[data-theme]`) : un `:root`
+  seul perdrait contre `:root[data-theme='sombre']`, et le contraste renforcé
+  sauterait pour qui a forcé le sombre au bouton.
 - Cibles tactiles de 44 px minimum.
 
 Restent à faire avant une mise en ligne officielle : la déclaration
@@ -160,11 +177,11 @@ en place.
 
 Repères mesurés sur la construction actuelle :
 
-- Aucun fichier JavaScript servi aux visiteurs. Le seul script du site (le
-  chargement différé des vidéos) fait une quinzaine de lignes, est intégré à la
-  page et n'apparaît que sur les pages qui contiennent une vidéo.
-- Une seule feuille de style, environ 5 ko, thème sombre compris.
-- Pages HTML de 3 à 19 ko.
+- Aucun fichier JavaScript téléchargé : environ 730 octets intégrés à la page,
+  pour la bascule de thème. Un troisième script, le chargement différé des
+  vidéos, n'apparaît que sur les pages qui en contiennent.
+- Une seule feuille de style, environ 6 ko, thème sombre compris.
+- Pages HTML de 3 à 20 ko.
 - Aucune police téléchargée, la typographie utilise la pile système.
 - Aucune requête vers un tiers sur les pages publiques : pas de CDN, pas de
   mesure d'audience, pas de cookie.
