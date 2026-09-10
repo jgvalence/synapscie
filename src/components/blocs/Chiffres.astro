@@ -1,0 +1,49 @@
+---
+interface Props {
+  titre?: string;
+  items: { valeur: string; label: string }[];
+}
+
+const { titre, items } = Astro.props;
+---
+<section class="bloc chiffres">
+  {titre && <h2>{titre}</h2>}
+  <dl class="chiffres__grille">
+    {
+      items.map(({ valeur, label }) => (
+        <div class="chiffres__item">
+          <dt class="chiffres__valeur">{valeur}</dt>
+          <dd class="chiffres__label">{label}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .chiffres__grille {
+    display: grid;
+    gap: var(--e-3);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    margin: 0;
+  }
+  .chiffres__item {
+    padding: var(--e-4) var(--e-3);
+    text-align: center;
+    background: var(--fond-doux);
+    border: 1px solid var(--trait-leger);
+    border-top: 4px solid var(--primaire-lisible);
+    border-radius: var(--rayon);
+  }
+  .chiffres__valeur {
+    font-size: var(--t-xxl);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--primaire-fort);
+  }
+  .chiffres__label {
+    margin: var(--e-1) 0 0;
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

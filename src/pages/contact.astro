@@ -1,0 +1,122 @@
+---
+import Base from '../layouts/Base.astro';
+import { lien } from '../lib/lien';
+import { formulaireActif, lienCourriel } from '../lib/contact';
+import { ASSO } from '../config';
+
+const cle = import.meta.env.PUBLIC_CLE_FORMULAIRE;
+
+// Web3Forms exige une adresse absolue. Sans elle, l'envoi renvoie le visiteur
+// vers la page de confirmation de web3forms.com, hors du site.
+const urlMerci = new URL(lien('/merci/'), Astro.url).href;
+---
+<Base
+  titre="Nous contacter"
+  description="Écrire à SynapScie."
+>
+  <div class="conteneur">
+    <h1>Nous contacter</h1>
+
+    {
+      formulaireActif ? (
+        <form class="formulaire" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value={cle} />
+          <input type="hidden" name="subject" value="Message depuis le site SynapScie" />
+          <input type="hidden" name="from_name" value="Site SynapScie" />
+          <input type="hidden" name="redirect" value={urlMerci} />
+
+          <input
+            type="checkbox"
+            name="botcheck"
+            class="lecteur-ecran"
+            tabindex="-1"
+            autocomplete="off"
+          />
+
+          <p class="formulaire__mention-obligatoire">
+            Les champs suivis de (obligatoire) doivent être remplis.
+          </p>
+
+          <div class="champ">
+            <label for="message">Message (obligatoire)</label>
+            <textarea id="message" name="message" rows="8" required></textarea>
+          </div>
+
+          <div class="champ">
+            <label for="courriel">Adresse de courriel (obligatoire)</label>
+            <input
+              type="email"
+              id="courriel"
+              name="email"
+              required
+              autocomplete="email"
+              aria-describedby="note-confidentialite"
+            />
+            <p id="note-confidentialite" class="champ__aide">
+              Votre adresse ne sera pas diffusée. Elle sert uniquement à vous
+              répondre.
+            </p>
+          </div>
+
+          <button type="submit" class="bouton bouton--plein">Envoyer</button>
+        </form>
+      ) : lienCourriel ? (
+        <div class="mesure">
+          <p class="intro">
+            Une question, une envie de participer, une proposition ? Écrivez-nous.
+          </p>
+          <p>
+            <a class="bouton bouton--plein" href={lienCourriel}>
+              {ASSO.courriel}
+            </a>
+          </p>
+        </div>
+      ) : (
+        <p class="intro mesure">
+          L'adresse de courriel de l'association sera publiée ici prochainement.
+        </p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .formulaire {
+    max-width: var(--largeur-texte);
+  }
+  .formulaire__mention-obligatoire {
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+  .champ {
+    margin-bottom: var(--e-4);
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--e-1);
+  }
+  textarea,
+  input[type='email'] {
+    width: 100%;
+    padding: 0.7rem;
+    font: inherit;
+    color: var(--texte);
+    background: var(--fond);
+    border: 2px solid var(--trait);
+    border-radius: var(--rayon);
+  }
+  textarea:focus,
+  input[type='email']:focus {
+    border-color: var(--primaire-lisible);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+  .champ__aide {
+    margin: var(--e-1) 0 0;
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

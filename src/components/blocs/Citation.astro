@@ -1,0 +1,35 @@
+---
+interface Props {
+  texte: string;
+  auteur?: string;
+}
+
+const { texte, auteur } = Astro.props;
+---
+<figure class="bloc citation mesure">
+  <blockquote>
+    <p>{texte}</p>
+  </blockquote>
+  {auteur && <figcaption>&mdash; {auteur}</figcaption>}
+</figure>
+
+<style>
+  .citation {
+    margin: 0;
+    padding: var(--e-4);
+    background: var(--secondaire-voile);
+    border-left: 5px solid var(--secondaire-trait);
+    border-radius: 0 var(--rayon) var(--rayon) 0;
+  }
+  blockquote {
+    margin: 0;
+    font-size: var(--t-l);
+    font-style: italic;
+  }
+  figcaption {
+    margin-top: var(--e-2);
+    font-size: var(--t-s);
+    font-weight: 600;
+    color: var(--texte);
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+interface Props {
+  texte: string;
+  url: string;
+  style?: 'plein' | 'contour';
+}
+
+const { texte, url, style = 'plein' } = Astro.props;
+const externe = /^https?:\/\//.test(url);
+---
+<p class="bloc bloc-bouton">
+  <a
+    class:list={['bouton', `bouton--${style}`]}
+    href={url}
+    target={externe ? '_blank' : undefined}
+    rel={externe ? 'noopener noreferrer' : undefined}
+  >
+    {texte}
+    {externe && <span class="lecteur-ecran">(nouvelle fenêtre)</span>}
+  </a>
+</p>
+
+<style>
+  .bloc-bouton { margin: 0; }
+</style>

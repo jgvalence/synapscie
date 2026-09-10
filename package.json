@@ -1,0 +1,30 @@
+{
+  "name": "synapscie-site",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "npm run verifier:contrastes && astro build",
+    "preview": "astro preview",
+    "verifier:contrastes": "node scripts/verifier-contrastes.mjs",
+    "verifier:types": "astro check",
+    "images:provisoires": "node scripts/images-provisoires.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.2.10",
+    "marked": "^18.0.11",
+    "sharp": "^0.35.4"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "private": true,
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.5.0",
+    "typescript": "^6.0.3"
+  }
+}

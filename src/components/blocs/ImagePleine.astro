@@ -1,0 +1,37 @@
+---
+import { Picture } from 'astro:assets';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  legende?: string;
+}
+
+const { image, alt, legende } = Astro.props;
+---
+<figure class="bloc image-pleine">
+  <Picture
+    src={image}
+    alt={alt}
+    widths={[640, 1024, 1440]}
+    sizes="(min-width: 68rem) 68rem, 100vw"
+    formats={['avif', 'webp']}
+    fallbackFormat="jpeg"
+    loading="lazy"
+    decoding="async"
+  />
+  {legende && <figcaption>{legende}</figcaption>}
+</figure>
+
+<style>
+  .image-pleine { margin: 0; }
+  .image-pleine :global(img) {
+    width: 100%;
+    border-radius: var(--rayon);
+  }
+  figcaption {
+    margin-top: var(--e-2);
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

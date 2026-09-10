@@ -1,0 +1,60 @@
+---
+import { Picture } from 'astro:assets';
+
+interface Props {
+  titre?: string;
+  images: { image: ImageMetadata; alt: string; legende?: string }[];
+}
+
+const { titre, images } = Astro.props;
+---
+<section class="bloc galerie">
+  {titre && <h2>{titre}</h2>}
+  <ul class="galerie__grille">
+    {
+      images.map(({ image, alt, legende }) => (
+        <li>
+          <figure>
+            <Picture
+              src={image}
+              alt={alt}
+              widths={[320, 640]}
+              sizes="(min-width: 62rem) 22rem, (min-width: 40rem) 45vw, 100vw"
+              formats={['avif', 'webp']}
+              fallbackFormat="jpeg"
+              loading="lazy"
+              decoding="async"
+            />
+            {legende && <figcaption>{legende}</figcaption>}
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .galerie__grille {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--e-3);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+  figure {
+    margin: 0;
+    height: 100%;
+  }
+  figure :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--rayon);
+  }
+  figcaption {
+    margin-top: var(--e-2);
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

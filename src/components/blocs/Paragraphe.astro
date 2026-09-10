@@ -1,0 +1,20 @@
+---
+import TexteRiche from '../TexteRiche.astro';
+
+interface Props {
+  titre?: string;
+  texte: string;
+}
+
+const { titre, texte } = Astro.props;
+---
+<section class="bloc bloc-paragraphe mesure">
+  {titre && <h2>{titre}</h2>}
+  <TexteRiche texte={texte} />
+</section>
+
+<style>
+  .bloc-paragraphe {
+    font-size: var(--t-l);
+  }
+</style>

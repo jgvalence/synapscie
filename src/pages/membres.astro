@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import TexteImage from '../components/blocs/TexteImage.astro';
+
+const membres = (await getCollection('membres')).sort(
+  (a, b) => a.data.ordre - b.data.ordre,
+);
+---
+<Base
+  titre="Membres"
+  description="Les personnes qui composent SynapScie et font vivre ses projets."
+>
+  <div class="conteneur">
+    <h1>Les membres</h1>
+    <p class="intro mesure">
+      SynapScie réunit des chercheuses, des chercheurs, des médiateurs et des
+      bénévoles venus d'horizons différents.
+    </p>
+
+    <ul class="membres">
+      {
+        membres.map((membre, i) => (
+          <li>
+            {membre.data.photo ? (
+              <TexteImage
+                niveau="h2"
+                titre={membre.data.nom}
+                texte={
+                  (membre.data.role ? `**${membre.data.role}**\n\n` : '') + membre.data.bio
+                }
+                image={membre.data.photo}
+                alt={membre.data.alt_photo ?? `Portrait de ${membre.data.nom}.`}
+
+                position_image={i % 2 === 0 ? 'gauche' : 'droite'}
+                rond
+              />
+            ) : (
+              <div class="membre-sans-photo mesure">
+                <h2>{membre.data.nom}</h2>
+                {membre.data.role && <p class="membre-sans-photo__role">{membre.data.role}</p>}
+                <p>{membre.data.bio}</p>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .intro {
+    font-size: var(--t-l);
+    color: var(--texte-doux);
+    margin-bottom: var(--e-6);
+  }
+  .membres {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .membres > li + li {
+    margin-top: var(--e-5);
+    padding-top: var(--e-5);
+    border-top: 1px solid var(--trait-leger);
+  }
+  .membre-sans-photo__role {
+    font-weight: 700;
+    margin-bottom: var(--e-2);
+  }
+</style>

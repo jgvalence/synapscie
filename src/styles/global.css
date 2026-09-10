@@ -1,0 +1,273 @@
+/* ===========================================================================
+   1. MARQUE
+   Les quatre seules couleurs a modifier pour changer l'identite du site.
+   Tout le reste en decoule. Apres modification : npm run verifier:contrastes
+   =========================================================================== */
+:root {
+  --marque-primaire: #0f6a64;
+  --marque-secondaire: #f0a830;
+  --marque-primaire-texte: #ffffff;
+  --marque-secondaire-texte: #16191d;
+
+  /* =========================================================================
+     2. ROLES - theme clair (par defaut)
+     Les composants n'utilisent QUE ces jetons, jamais --marque-* directement.
+     C'est ce qui permet au theme sombre de tout redefinir a un seul endroit.
+     ========================================================================= */
+  color-scheme: light dark;
+
+  --texte: #16191d;
+  --texte-doux: #4f565e;
+  --fond: #ffffff;
+  --fond-doux: #f4f6f7;
+  --trait: #86898e;
+  --trait-leger: #dfe3e6;
+  --focus: #16191d;
+  --lien-visite: #6b3a86;
+
+  /* Primaire, par usage :
+     --primaire-lisible : ecrire ou tracer un trait sur --fond
+     --primaire-fort    : ecrire sur --primaire-voile ou --fond-doux
+     --primaire-voile   : aplat tres leger, teinte
+     --primaire-aplat   : aplat plein, porte --primaire-aplat-texte */
+  --primaire-lisible: var(--marque-primaire);
+  --primaire-fort: color-mix(in srgb, var(--marque-primaire) 80%, #000000);
+  --primaire-voile: color-mix(in srgb, var(--marque-primaire) 10%, var(--fond));
+  --primaire-aplat: var(--marque-primaire);
+  --primaire-aplat-texte: var(--marque-primaire-texte);
+  --primaire-aplat-survol: color-mix(in srgb, var(--marque-primaire) 80%, #000000);
+
+  --secondaire-trait: color-mix(in srgb, var(--marque-secondaire) 50%, #000000);
+  --secondaire-voile: color-mix(in srgb, var(--marque-secondaire) 18%, var(--fond));
+
+  --lien: var(--primaire-lisible);
+
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --t-xs: 0.8125rem;
+  --t-s: 0.9375rem;
+  --t-m: 1rem;
+  --t-l: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  --t-xl: clamp(1.35rem, 1.1rem + 1.1vw, 1.85rem);
+  --t-xxl: clamp(1.8rem, 1.3rem + 2.3vw, 2.75rem);
+
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 1rem;
+  --e-4: 1.5rem;
+  --e-5: 2.5rem;
+  --e-6: 4rem;
+
+  --largeur-max: 68rem;
+  --largeur-texte: 40rem;
+  --rayon: 6px;
+}
+
+/* ===========================================================================
+   3. ROLES - theme sombre
+   Suit le reglage du systeme d'exploitation. Aucun JavaScript, aucun stockage.
+   Seuls les jetons de couleur changent : la mise en page est identique.
+   Sur fond sombre la primaire de marque devient trop peu contrastee pour
+   ecrire dessus, d'ou des melanges vers le blanc et non vers le noir.
+   =========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --texte: #e9ebed;
+    --texte-doux: #aab2b9;
+    --fond: #14171a;
+    --fond-doux: #1d2125;
+    --trait: #79818a;
+    --trait-leger: #313940;
+    --focus: #f2f5f7;
+    --lien-visite: #cba6e8;
+
+    --primaire-lisible: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
+    --primaire-fort: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
+    --primaire-voile: color-mix(in srgb, var(--marque-primaire) 20%, var(--fond));
+
+    /* L'aplat plein s'eclaircit et porte du texte sombre : un aplat de la
+       primaire de marque serait presque invisible sur un fond noir. */
+    --primaire-aplat: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
+    --primaire-aplat-texte: var(--fond);
+    --primaire-aplat-survol: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
+
+    --secondaire-trait: color-mix(in srgb, var(--marque-secondaire) 85%, #ffffff);
+    --secondaire-voile: color-mix(in srgb, var(--marque-secondaire) 12%, var(--fond));
+  }
+}
+
+/* ===========================================================================
+   4. Base
+   =========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--police);
+  font-size: var(--t-m);
+  line-height: 1.65;
+  color: var(--texte);
+  background: var(--fond);
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  margin: 0 0 var(--e-2);
+  text-wrap: balance;
+}
+h1 { font-size: var(--t-xxl); }
+h2 { font-size: var(--t-xl); }
+h3 { font-size: var(--t-l); }
+
+p, ul, ol { margin: 0 0 var(--e-3); }
+:is(p, ul, ol):last-child { margin-bottom: 0; }
+
+a { color: var(--lien); text-underline-offset: 0.15em; }
+a:visited { color: var(--lien-visite); }
+a:hover { text-decoration-thickness: 2px; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Declare apres le theme sombre : ces surcharges doivent gagner dans les deux
+   themes. Les var() se resolvent a l'usage, donc --texte vaut bien ici la
+   valeur du theme actif. */
+@media (prefers-contrast: more) {
+  :root { --texte-doux: var(--texte); --trait-leger: var(--trait); }
+}
+
+.conteneur {
+  width: 100%;
+  max-width: var(--largeur-max);
+  margin-inline: auto;
+  padding-inline: var(--e-4);
+}
+
+.mesure { max-width: var(--largeur-texte); }
+
+.lecteur-ecran {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.saut-contenu {
+  position: absolute;
+  left: var(--e-3);
+  top: -4rem;
+  z-index: 100;
+  padding: var(--e-2) var(--e-3);
+  background: var(--primaire-aplat);
+  color: var(--primaire-aplat-texte);
+  border-radius: var(--rayon);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.saut-contenu:focus { top: var(--e-3); }
+
+.entete { border-bottom: 1px solid var(--trait-leger); }
+.entete__interieur {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  padding-block: var(--e-3);
+}
+.entete__logo {
+  font-size: var(--t-l);
+  font-weight: 700;
+  color: var(--texte);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav a {
+  display: block;
+  padding: var(--e-2) 0.9rem;
+  border-radius: var(--rayon);
+  color: var(--texte-doux);
+  text-decoration: none;
+  font-size: var(--t-s);
+}
+.nav a:hover { background: var(--fond-doux); color: var(--texte); }
+
+.nav a[aria-current="page"] {
+  background: var(--primaire-voile);
+  color: var(--primaire-fort);
+  font-weight: 700;
+  box-shadow: inset 0 -3px 0 var(--primaire-lisible);
+}
+
+.pied {
+  margin-top: var(--e-6);
+  border-top: 1px solid var(--trait-leger);
+  background: var(--fond-doux);
+  color: var(--texte-doux);
+  font-size: var(--t-s);
+}
+.pied__interieur {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  justify-content: space-between;
+  padding-block: var(--e-5);
+}
+
+main { padding-block: var(--e-5) var(--e-3); }
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.4rem;
+  border: 2px solid transparent;
+  border-radius: var(--rayon);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+
+  min-height: 44px;
+}
+.bouton--plein {
+  background: var(--primaire-aplat);
+  color: var(--primaire-aplat-texte);
+  border-color: var(--primaire-aplat);
+}
+.bouton--plein:hover {
+  background: var(--primaire-aplat-survol);
+  border-color: var(--primaire-aplat-survol);
+}
+.bouton--contour {
+  background: transparent;
+  color: var(--primaire-fort);
+  border-color: var(--primaire-lisible);
+}
+.bouton--contour:hover { background: var(--primaire-voile); }

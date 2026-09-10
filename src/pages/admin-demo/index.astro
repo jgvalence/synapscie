@@ -1,0 +1,19 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Démonstration du CMS SynapScie</title>
+    <link href={`${base}/admin/config.demo.yml`} type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <script
+      is:inline
+      type="module"
+      src="https://unpkg.com/@sveltia/cms@0.205.0/dist/sveltia-cms.js"></script>
+  </body>
+</html>

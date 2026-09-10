@@ -1,0 +1,81 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import RenduBlocs from '../../components/RenduBlocs.astro';
+import { lien } from '../../lib/lien';
+
+export const getStaticPaths = (async () => {
+  const projets = await getCollection('projets', ({ data }) => data.publie);
+  return projets.map((projet) => ({
+    params: { slug: projet.id },
+    props: { projet },
+  }));
+}) satisfies GetStaticPaths;
+
+const { projet } = Astro.props;
+const { titre, accroche, couverture, alt_couverture, date, blocs } = projet.data;
+
+const dateFr = date.toLocaleDateString('fr-FR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+<Base titre={titre} description={accroche}>
+  <div class="conteneur">
+    <nav class="fil" aria-label="Fil d'Ariane">
+      <a href={lien('/projets/')}>Retour à la liste des projets</a>
+    </nav>
+
+    <article>
+      <header class="entete-projet">
+        <h1>{titre}</h1>
+        <p class="entete-projet__date">
+          <time datetime={date.toISOString().slice(0, 10)}>{dateFr}</time>
+        </p>
+        <p class="entete-projet__accroche mesure">{accroche}</p>
+        <Picture
+          class="entete-projet__couverture"
+          src={couverture}
+          alt={alt_couverture}
+          widths={[640, 1024, 1440]}
+          sizes="(min-width: 68rem) 68rem, 100vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="jpeg"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </header>
+
+      <RenduBlocs blocs={blocs} />
+    </article>
+  </div>
+</Base>
+
+<style>
+  .fil {
+    margin-bottom: var(--e-4);
+    font-size: var(--t-s);
+  }
+  .entete-projet {
+    margin-bottom: var(--e-5);
+  }
+  .entete-projet__date {
+    color: var(--texte-doux);
+    font-size: var(--t-s);
+    margin-bottom: var(--e-3);
+  }
+  .entete-projet__accroche {
+    font-size: var(--t-l);
+    color: var(--texte-doux);
+    margin-bottom: var(--e-4);
+  }
+  .entete-projet :global(.entete-projet__couverture) {
+    width: 100%;
+    max-height: 26rem;
+    object-fit: cover;
+    border-radius: var(--rayon);
+  }
+</style>

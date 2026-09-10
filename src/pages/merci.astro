@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { lien } from '../lib/lien';
+---
+<Base
+  titre="Message envoyé"
+  description="Votre message a bien été transmis à SynapScie."
+>
+  <div class="conteneur">
+    <h1>Message envoyé</h1>
+    <p class="intro mesure">
+      Merci, votre message nous est bien parvenu. Nous vous répondrons à
+      l'adresse de courriel que vous avez indiquée.
+    </p>
+    <p>
+      <a class="bouton bouton--contour" href={lien('/')}>Retour à l'accueil</a>
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,257 @@
+backend:
+  name: github
+  repo: jgvalence/synapscie
+  branch: main
+  base_url: https://synapscie-auth.VOTRE-SOUS-DOMAINE.workers.dev
+
+site_url: https://jgvalence.github.io/synapscie
+display_url: https://jgvalence.github.io/synapscie
+
+media_folder: src/assets/site
+public_folder: /src/assets/site
+
+collections:
+  - name: projets
+    label: Projets
+    label_singular: Projet
+    description: >
+      Chaque projet a sa propre page, composée de blocs que vous assemblez
+      librement. Utilisez le bouton « Ajouter un bloc » en bas du formulaire.
+    folder: src/content/projets
+    media_folder: ../../assets/projets
+    public_folder: ../../assets/projets
+    create: true
+    delete: true
+    identifier_field: titre
+    slug: '{{titre}}'
+    extension: md
+    format: yaml-frontmatter
+    summary: '{{titre}}'
+    sortable_fields: [date, titre]
+    editor:
+      preview: false
+    preview_path: projets/{{slug}}/
+    view_filters:
+      - label: Publiés
+        field: publie
+        pattern: true
+      - label: Brouillons
+        field: publie
+        pattern: false
+
+    fields:
+      - label: Titre du projet
+        name: titre
+        widget: string
+
+      - label: Accroche
+        name: accroche
+        widget: text
+        hint: >
+          Deux ou trois phrases. C'est ce texte qui apparaît sous le titre dans
+          la liste des projets, et dans les résultats de recherche Google.
+
+      - label: Image de couverture
+        name: couverture
+        widget: image
+        choose_url: false
+        hint: >
+          Format paysage de préférence. Inutile de la redimensionner : le site
+          en fabrique automatiquement plusieurs tailles.
+
+      - label: Description de l'image de couverture
+        name: alt_couverture
+        widget: string
+        hint: >
+          Obligatoire. Décrivez ce que montre la photo, pour les personnes qui
+          ne peuvent pas la voir. Exemple : « Des élèves assemblent un
+          dispositif sur une table ». Ne commencez pas par « Photo de ».
+
+      - label: Date
+        name: date
+        widget: datetime
+        date_format: DD/MM/YYYY
+        time_format: false
+        format: YYYY-MM-DD
+        picker_utc: true
+
+      - label: Publié
+        name: publie
+        widget: boolean
+        default: true
+        hint: >
+          Décochez pour retirer le projet du site sans le supprimer.
+
+      - label: Contenu de la page
+        name: blocs
+        label_singular: bloc
+        widget: list
+        collapsed: false
+        types:
+          - label: Paragraphe
+            name: paragraphe
+            widget: object
+            summary: 'Paragraphe : {{fields.titre}}'
+            fields:
+              - { label: Titre (facultatif), name: titre, widget: string, required: false }
+              - { label: Texte, name: texte, widget: markdown }
+
+          - label: Texte + image
+            name: texte-image
+            widget: object
+            summary: 'Texte + image : {{fields.titre}}'
+            fields:
+              - { label: Titre (facultatif), name: titre, widget: string, required: false }
+              - { label: Texte, name: texte, widget: markdown }
+              - { label: Image, name: image, widget: image, choose_url: false }
+              - label: Description de l'image
+                name: alt
+                widget: string
+                hint: Obligatoire. Décrivez ce que montre l'image.
+              - label: Position de l'image
+                name: position_image
+                widget: select
+                default: droite
+                options:
+                  - { label: À droite du texte, value: droite }
+                  - { label: À gauche du texte, value: gauche }
+                hint: >
+                  Sur téléphone, l'image passe toujours au-dessus du texte.
+              - { label: Légende (facultatif), name: legende, widget: string, required: false }
+
+          - label: Image seule
+            name: image
+            widget: object
+            summary: 'Image : {{fields.alt}}'
+            fields:
+              - { label: Image, name: image, widget: image, choose_url: false }
+              - label: Description de l'image
+                name: alt
+                widget: string
+                hint: Obligatoire. Décrivez ce que montre l'image.
+              - { label: Légende (facultatif), name: legende, widget: string, required: false }
+
+          - label: Galerie de photos
+            name: galerie
+            widget: object
+            summary: 'Galerie : {{fields.titre}}'
+            fields:
+              - { label: Titre (facultatif), name: titre, widget: string, required: false }
+              - label: Photos
+                name: images
+                label_singular: photo
+                widget: list
+                summary: '{{fields.alt}}'
+                fields:
+                  - { label: Image, name: image, widget: image, choose_url: false }
+                  - label: Description de l'image
+                    name: alt
+                    widget: string
+                    hint: Obligatoire.
+                  - { label: Légende (facultatif), name: legende, widget: string, required: false }
+
+          - label: Citation
+            name: citation
+            widget: object
+            summary: 'Citation : {{fields.auteur}}'
+            fields:
+              - { label: Citation, name: texte, widget: text }
+              - { label: Auteur (facultatif), name: auteur, widget: string, required: false }
+
+          - label: Chiffres clés
+            name: chiffres
+            widget: object
+            summary: 'Chiffres clés : {{fields.titre}}'
+            fields:
+              - { label: Titre (facultatif), name: titre, widget: string, required: false }
+              - label: Chiffres
+                name: items
+                label_singular: chiffre
+                widget: list
+                summary: '{{fields.valeur}} {{fields.label}}'
+                fields:
+                  - { label: Valeur, name: valeur, widget: string, hint: 'Exemple : 14, ou « 3 ans »' }
+                  - { label: Libellé, name: label, widget: string, hint: 'Exemple : bénévoles' }
+
+          - label: Bouton
+            name: bouton
+            widget: object
+            summary: 'Bouton : {{fields.texte}}'
+            fields:
+              - { label: Texte du bouton, name: texte, widget: string }
+              - label: Adresse
+                name: url
+                widget: string
+                hint: >
+                  Une page du site (exemple : /contact/) ou une adresse complète
+                  commençant par https://
+              - label: Apparence
+                name: style
+                widget: select
+                default: plein
+                options:
+                  - { label: Bouton plein, value: plein }
+                  - { label: Bouton contour, value: contour }
+
+          - label: Vidéo
+            name: video
+            widget: object
+            summary: 'Vidéo : {{fields.titre}}'
+            fields:
+              - { label: Titre (facultatif), name: titre, widget: string, required: false }
+              - label: Adresse de la vidéo
+                name: url
+                widget: string
+                pattern:
+                  - '^https?://(www\.)?(youtube\.com|youtu\.be|vimeo\.com)/'
+                  - Collez un lien YouTube ou Vimeo complet.
+                hint: >
+                  La vidéo ne se télécharge que si le visiteur clique dessus.
+
+          - label: Séparateur
+            name: separateur
+            widget: object
+            summary: Séparateur
+            fields:
+              - { label: Ce bloc n'a aucun réglage., name: note, widget: hidden, default: '' }
+
+  - name: membres
+    label: Membres
+    label_singular: Membre
+    description: >
+      Les personnes présentées sur la page Membres. L'ordre d'affichage est
+      donne par le champ « Ordre ».
+    folder: src/content/membres
+    media_folder: ../../assets/membres
+    public_folder: ../../assets/membres
+    create: true
+    delete: true
+    identifier_field: nom
+    slug: '{{nom}}'
+    extension: md
+    format: yaml-frontmatter
+    summary: '{{ordre}}. {{nom}}'
+    sortable_fields: [ordre, nom]
+    editor:
+      preview: false
+    preview_path: membres/
+    fields:
+      - { label: Nom, name: nom, widget: string }
+      - { label: Rôle dans l'association, name: role, widget: string, required: false }
+      - label: Présentation
+        name: bio
+        widget: text
+        hint: Deux ou trois phrases.
+      - { label: Photo, name: photo, widget: image, required: false, choose_url: false }
+      - label: Description de la photo
+        name: alt_photo
+        widget: string
+        required: false
+        hint: 'Exemple : « Portrait de Camille Durand ».'
+      - label: Ordre d'affichage
+        name: ordre
+        widget: number
+        value_type: int
+        default: 100
+        hint: >
+          Les plus petits nombres apparaissent en premier.

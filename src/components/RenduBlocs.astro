@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+import Paragraphe from './blocs/Paragraphe.astro';
+import TexteImage from './blocs/TexteImage.astro';
+import ImagePleine from './blocs/ImagePleine.astro';
+import Galerie from './blocs/Galerie.astro';
+import Citation from './blocs/Citation.astro';
+import Chiffres from './blocs/Chiffres.astro';
+import Bouton from './blocs/Bouton.astro';
+import Video from './blocs/Video.astro';
+import Separateur from './blocs/Separateur.astro';
+
+type Bloc = CollectionEntry<'projets'>['data']['blocs'][number];
+
+interface Props {
+  blocs: Bloc[];
+}
+
+const { blocs } = Astro.props;
+---
+<div class="blocs">
+  {
+    blocs.map((bloc) => {
+      switch (bloc.type) {
+        case 'paragraphe':
+          return <Paragraphe titre={bloc.titre} texte={bloc.texte} />;
+        case 'texte-image':
+          return (
+            <TexteImage
+              titre={bloc.titre}
+              texte={bloc.texte}
+              image={bloc.image}
+              alt={bloc.alt}
+              position_image={bloc.position_image}
+              legende={bloc.legende}
+            />
+          );
+        case 'image':
+          return <ImagePleine image={bloc.image} alt={bloc.alt} legende={bloc.legende} />;
+        case 'galerie':
+          return <Galerie titre={bloc.titre} images={bloc.images} />;
+        case 'citation':
+          return <Citation texte={bloc.texte} auteur={bloc.auteur} />;
+        case 'chiffres':
+          return <Chiffres titre={bloc.titre} items={bloc.items} />;
+        case 'bouton':
+          return <Bouton texte={bloc.texte} url={bloc.url} style={bloc.style} />;
+        case 'video':
+          return <Video titre={bloc.titre} url={bloc.url} />;
+        case 'separateur':
+          return <Separateur />;
+      }
+    })
+  }
+</div>
+
+<style>
+  .blocs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--e-5);
+  }
+</style>

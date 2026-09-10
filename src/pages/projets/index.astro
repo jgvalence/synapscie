@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { lien } from '../../lib/lien';
+
+const projets = (await getCollection('projets', ({ data }) => data.publie)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const dateFr = (d: Date) =>
+  d.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' });
+---
+<Base
+  titre="Projets"
+  description="Les projets menés par l'association SynapScie : ateliers, expositions, outils libres."
+>
+  <div class="conteneur">
+    <h1>Nos projets</h1>
+    <p class="intro mesure">
+      Chaque projet est raconté par celles et ceux qui l'ont mené.
+    </p>
+
+    {
+      projets.length === 0 ? (
+        <p>Aucun projet publié pour le moment.</p>
+      ) : (
+        <ul class="projets">
+          {projets.map((projet) => (
+            <li class="projet">
+              <Picture
+                class="projet__vignette"
+                src={projet.data.couverture}
+                alt={projet.data.alt_couverture}
+                widths={[320, 640]}
+                sizes="(min-width: 48rem) 20rem, 100vw"
+                formats={['avif', 'webp']}
+                fallbackFormat="jpeg"
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="projet__corps">
+                <h2 class="projet__titre">
+
+                  <a href={lien(`/projets/${projet.id}/`)}>{projet.data.titre}</a>
+                </h2>
+                <p class="projet__date">
+                  <time datetime={projet.data.date.toISOString().slice(0, 10)}>
+                    {dateFr(projet.data.date)}
+                  </time>
+                </p>
+                <p>{projet.data.accroche}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .intro {
+    font-size: var(--t-l);
+    color: var(--texte-doux);
+    margin-bottom: var(--e-5);
+  }
+  .projets {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .projet {
+    display: grid;
+    gap: var(--e-3);
+    padding-block: var(--e-4);
+  }
+  .projet + .projet {
+    border-top: 1px solid var(--trait-leger);
+  }
+  @media (min-width: 48rem) {
+    .projet {
+      grid-template-columns: 20rem 1fr;
+      gap: var(--e-4);
+      align-items: start;
+    }
+  }
+  .projet :global(.projet__vignette) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 1px solid var(--trait-leger);
+    border-radius: var(--rayon);
+  }
+  .projet__titre {
+    margin-bottom: var(--e-1);
+  }
+  .projet__date {
+    margin-bottom: var(--e-2);
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

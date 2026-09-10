@@ -1,0 +1,87 @@
+---
+import '../styles/global.css';
+import { lien } from '../lib/lien';
+import { formulaireActif, lienCourriel } from '../lib/contact';
+import { ASSO } from '../config';
+
+interface Props {
+  titre: string;
+  description: string;
+}
+
+const { titre, description } = Astro.props;
+
+const PAGES = [
+  { url: '/', libelle: 'Accueil' },
+  { url: '/membres/', libelle: 'Membres' },
+  { url: '/projets/', libelle: 'Projets' },
+  // Sans formulaire, la page Contact ne porte qu'une adresse : elle quitte le
+  // menu, l'adresse la remplace au pied de page. Voir src/lib/contact.ts.
+  ...(formulaireActif ? [{ url: '/contact/', libelle: 'Nous contacter' }] : []),
+];
+
+const contactPied = formulaireActif
+  ? { href: lien('/contact/'), libelle: 'Nous contacter' }
+  : lienCourriel
+    ? { href: lienCourriel, libelle: ASSO.courriel }
+    : null;
+
+const estCourante = (url: string) => {
+  const ici = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '') || '/';
+  return url === '/' ? ici === '/' : ici.startsWith(url);
+};
+
+const annee = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre} | {ASSO.nom}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={lien('/favicon.svg')} type="image/svg+xml" />
+    <meta property="og:title" content={`${titre} | ${ASSO.nom}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+  </head>
+  <body>
+    <a class="saut-contenu" href="#contenu">Aller au contenu principal</a>
+
+    <header class="entete">
+      <div class="conteneur entete__interieur">
+        <a class="entete__logo" href={lien('/')}>{ASSO.nom}</a>
+        <nav class="nav" aria-label="Navigation principale">
+          <ul>
+            {
+              PAGES.map((page) => (
+                <li>
+                  <a
+                    href={lien(page.url)}
+                    aria-current={estCourante(page.url) ? 'page' : undefined}
+                  >
+                    {page.libelle}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <slot />
+    </main>
+
+    <footer class="pied">
+      <div class="conteneur pied__interieur">
+        <p>&copy; {annee} {ASSO.nom}{ASSO.statutJuridique && ` — ${ASSO.statutJuridique}`}</p>
+        {contactPied && (
+          <p><a href={contactPied.href}>{contactPied.libelle}</a></p>
+        )}
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,150 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { lien } from '../lib/lien';
+import { formulaireActif, lienCourriel } from '../lib/contact';
+import accueil from '../assets/site/accueil.jpg';
+
+// Le raccourci « Nous écrire » mène au formulaire quand il existe, à l'adresse
+// de courriel sinon. Sans adresse renseignée, il disparaît plutôt que de
+// pointer dans le vide. Voir src/lib/contact.ts.
+const ecrire = formulaireActif ? lien('/contact/') : lienCourriel;
+
+const LIENS = [
+  {
+    href: lien('/projets/'),
+    titre: 'Nos projets',
+    texte: "Les actions menées par l'association, racontées en images.",
+  },
+  {
+    href: lien('/membres/'),
+    titre: 'Qui sommes-nous',
+    texte: 'Les personnes qui font vivre SynapScie au quotidien.',
+  },
+  ...(ecrire
+    ? [
+        {
+          href: ecrire,
+          titre: 'Nous écrire',
+          texte: 'Une question, une envie de participer, une proposition.',
+        },
+      ]
+    : []),
+];
+---
+<Base
+  titre="Accueil"
+  description="SynapScie conçoit et anime des projets de médiation scientifique : ateliers, rencontres, expositions et outils libres."
+>
+  <div class="conteneur">
+    <section class="hero">
+      <div class="hero__texte">
+        <h1>Rendre les sciences partageables</h1>
+        <p class="hero__accroche">
+          SynapScie conçoit et anime des projets de médiation scientifique :
+          ateliers, rencontres, expositions et outils libres, pensés pour
+          circuler au-delà des lieux savants.
+        </p>
+        <p class="hero__actions">
+          <a class="bouton bouton--plein" href={lien('/projets/')}>Découvrir nos projets</a>
+          {ecrire && <a class="bouton bouton--contour" href={ecrire}>Nous contacter</a>}
+        </p>
+      </div>
+      <Picture
+        class="hero__image"
+        src={accueil}
+        alt="Atelier de médiation scientifique animé par des membres de SynapScie."
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 56rem) 32rem, 100vw"
+        formats={['avif', 'webp']}
+        fallbackFormat="jpeg"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </section>
+
+    <section class="raccourcis" aria-labelledby="titre-raccourcis">
+      <h2 id="titre-raccourcis" class="lecteur-ecran">Accès rapide</h2>
+      <ul>
+        {
+          LIENS.map((item) => (
+            <li>
+              <a href={item.href}>
+                <span class="raccourcis__titre">{item.titre}</span>
+                <span class="raccourcis__texte">{item.texte}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--e-4);
+    align-items: center;
+    margin-bottom: var(--e-6);
+  }
+  @media (min-width: 56rem) {
+    .hero {
+      grid-template-columns: 1fr 32rem;
+      gap: var(--e-5);
+    }
+  }
+  .hero__accroche {
+    font-size: var(--t-l);
+    color: var(--texte-doux);
+    max-width: 36rem;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--e-2);
+    margin-top: var(--e-4);
+  }
+  .hero :global(.hero__image) {
+    width: 100%;
+    border-radius: var(--rayon);
+  }
+
+  .raccourcis ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--e-3);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  }
+  .raccourcis a {
+    display: block;
+    height: 100%;
+    padding: var(--e-4);
+    background: var(--fond-doux);
+    border: 1px solid var(--trait-leger);
+    border-left: 4px solid var(--primaire-lisible);
+    border-radius: var(--rayon);
+    text-decoration: none;
+    color: var(--texte);
+  }
+  .raccourcis a:hover {
+    background: var(--primaire-voile);
+    border-color: var(--primaire-lisible);
+  }
+  .raccourcis__titre {
+    display: block;
+    font-weight: 700;
+    font-size: var(--t-l);
+    margin-bottom: var(--e-1);
+
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .raccourcis__texte {
+    display: block;
+    color: var(--texte-doux);
+    font-size: var(--t-s);
+  }
+</style>

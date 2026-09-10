@@ -1,0 +1,41 @@
+---
+import { marked } from 'marked';
+
+interface Props {
+  texte: string;
+  class?: string;
+}
+
+const { texte, class: classe } = Astro.props;
+const html = marked.parse(texte ?? '', { async: false }) as string;
+---
+<div class:list={['texte-riche', classe]} set:html={html} />
+
+<style>
+  .texte-riche :global(> :last-child) {
+    margin-bottom: 0;
+  }
+  .texte-riche :global(ul),
+  .texte-riche :global(ol) {
+    padding-left: 1.25em;
+  }
+  .texte-riche :global(li) {
+    margin-bottom: 0.35em;
+  }
+  .texte-riche :global(strong) {
+    font-weight: 700;
+  }
+  .texte-riche :global(blockquote) {
+    margin: 0 0 1em;
+    padding-left: 1em;
+    border-left: 4px solid var(--trait);
+    color: var(--texte-doux);
+  }
+  .texte-riche :global(code) {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: 0.9em;
+    background: var(--fond-doux);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+</style>

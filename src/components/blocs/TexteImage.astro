@@ -1,0 +1,92 @@
+---
+import { Picture } from 'astro:assets';
+import TexteRiche from '../TexteRiche.astro';
+
+interface Props {
+  titre?: string;
+  texte: string;
+  image: ImageMetadata;
+  alt: string;
+  position_image?: 'gauche' | 'droite';
+  legende?: string;
+
+  rond?: boolean;
+
+  niveau?: 'h2' | 'h3';
+}
+
+const {
+  titre,
+  texte,
+  image,
+  alt,
+  position_image = 'droite',
+  legende,
+  rond = false,
+  niveau = 'h2',
+} = Astro.props;
+
+const Titre = niveau;
+---
+<section class:list={['bloc', 'texte-image', `texte-image--${position_image}`]}>
+  <figure class:list={['texte-image__media', { 'texte-image__media--rond': rond }]}>
+    <Picture
+      src={image}
+      alt={alt}
+      widths={[320, 640, 960]}
+      sizes="(min-width: 48rem) 45vw, 100vw"
+      formats={['avif', 'webp']}
+      fallbackFormat="jpeg"
+      loading="lazy"
+      decoding="async"
+    />
+    {legende && <figcaption>{legende}</figcaption>}
+  </figure>
+
+  <div class="texte-image__corps">
+    {titre && <Titre>{titre}</Titre>}
+    <TexteRiche texte={texte} />
+  </div>
+</section>
+
+<style>
+  .texte-image {
+    display: grid;
+    gap: var(--e-4);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .texte-image {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--e-5);
+    }
+
+    .texte-image--droite .texte-image__media {
+      order: 2;
+    }
+  }
+
+  .texte-image__media {
+    margin: 0;
+  }
+  .texte-image__media :global(img) {
+    width: 100%;
+    border-radius: var(--rayon);
+  }
+
+  .texte-image__media--rond :global(img) {
+    border-radius: 50%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    max-width: 15rem;
+    margin-inline: auto;
+    border: 1px solid var(--trait-leger);
+  }
+
+  figcaption {
+    margin-top: var(--e-2);
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+  }
+</style>

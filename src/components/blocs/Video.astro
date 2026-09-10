@@ -1,0 +1,124 @@
+---
+interface Props {
+  titre?: string;
+  url: string;
+}
+
+const { titre, url } = Astro.props;
+
+function urlIntegration(lien: string): string | null {
+  try {
+    const u = new URL(lien);
+    if (u.hostname.includes('youtube.com')) {
+      const id = u.searchParams.get('v') ?? u.pathname.split('/').pop();
+      return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1` : null;
+    }
+    if (u.hostname.includes('youtu.be')) {
+      const id = u.pathname.slice(1);
+      return id ? `https://www.youtube-nocookie.com/embed/${id}?autoplay=1` : null;
+    }
+    if (u.hostname.includes('vimeo.com')) {
+      const id = u.pathname.split('/').filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}?autoplay=1&dnt=1` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+const integration = urlIntegration(url);
+const libelle = titre ?? 'la vidéo';
+---
+<section class="bloc video">
+  {titre && <h2>{titre}</h2>}
+
+  {
+    integration ? (
+      <div class="video__cadre" data-video={integration}>
+        <button type="button" class="video__declencheur">
+          <span class="video__icone" aria-hidden="true">&#9654;</span>
+          <span class="video__libelle">Charger et lire {libelle}</span>
+          <span class="video__note">
+            La vidéo est hébergée par un service externe. Elle ne se charge
+            qu'après ce clic.
+          </span>
+        </button>
+      </div>
+    ) : (
+      <p>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Voir {libelle}
+          <span class="lecteur-ecran">(nouvelle fenêtre)</span>
+        </a>
+      </p>
+    )
+  }
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((cadre) => {
+    const bouton = cadre.querySelector('button');
+    bouton?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = cadre.dataset.video ?? '';
+      iframe.title = bouton.querySelector('.video__libelle')?.textContent?.trim() ?? 'Vidéo';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.loading = 'lazy';
+      cadre.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>
+
+<style>
+  .video__cadre {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--fond-doux);
+    border: 1px solid var(--trait);
+    border-radius: var(--rayon);
+    overflow: hidden;
+  }
+  .video__cadre :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .video__declencheur {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--e-2);
+    padding: var(--e-4);
+    background: none;
+    border: 0;
+    font: inherit;
+    color: var(--texte);
+    cursor: pointer;
+    text-align: center;
+  }
+  .video__declencheur:hover { background: var(--primaire-voile); }
+  .video__icone {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--primaire-aplat);
+    color: var(--primaire-aplat-texte);
+    font-size: 1.35rem;
+    padding-left: 0.2rem;
+  }
+  .video__libelle { font-weight: 600; }
+  .video__note {
+    font-size: var(--t-s);
+    color: var(--texte-doux);
+    max-width: 28rem;
+  }
+</style>
