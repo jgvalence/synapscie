@@ -10,7 +10,7 @@ Première installation : [SETUP.md](SETUP.md).
 
 | Commande | Effet |
 | --- | --- |
-| `npm run dev` | Serveur local sur http://localhost:4321 |
+| `npm run dev` | Serveur local sur http://localhost:4321/synapscie/ (suit `base`) |
 | `npm run build` | Vérifie les contrastes, puis construit dans `dist/` |
 | `npm run preview` | Sert `dist/` |
 | `npm run verifier:contrastes` | Contrôle des couleurs (RGAA + daltonisme) |

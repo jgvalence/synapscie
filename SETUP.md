@@ -197,8 +197,9 @@ Sveltia sait travailler directement sur les fichiers du disque, sans
 authentification.
 
 1. `npm run dev`
-2. Ouvrir `http://localhost:4321/admin` sous Chrome ou Edge (Firefox ne prend
-   pas en charge l'accès au système de fichiers).
+2. Ouvrir `http://localhost:4321/synapscie/admin/` sous Chrome ou Edge (Firefox
+   ne prend pas en charge l'accès au système de fichiers). L'adresse suit `base`
+   dans `astro.config.mjs` : sans `base`, ce serait `localhost:4321/admin/`.
 3. Cliquer sur **Work with Local Repository** et désigner ce dossier.
 
 Les modifications s'écrivent dans les fichiers du projet et apparaissent
