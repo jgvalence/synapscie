@@ -26,6 +26,10 @@ jobs:
 
       - name: Construire le site
         uses: withastro/action@v3
+        with:
+          # L'action tourne en Node 20 par defaut, Astro 7 exige >=22.12
+          # (voir `engines` dans package.json).
+          node-version: 22
         env:
           PUBLIC_CLE_FORMULAIRE: ${{ secrets.CLE_FORMULAIRE }}
 
