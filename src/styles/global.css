@@ -110,6 +110,15 @@ body {
   line-height: 1.65;
   color: var(--texte);
   background: var(--fond);
+
+  /* Colonne pleine hauteur : sur une page courte, `main` s'etire et pousse le
+     pied de page en bas de la fenetre, au lieu de le laisser flotter au milieu
+     avec du vide en dessous. `dvh` plutot que `vh` pour ne pas sauter quand la
+     barre d'adresse mobile se retracte. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 h1, h2, h3, h4 {
@@ -240,7 +249,14 @@ img { max-width: 100%; height: auto; display: block; }
   padding-block: var(--e-5);
 }
 
-main { padding-block: var(--e-5) var(--e-3); }
+/* `flex: 1` occupe toute la hauteur restante, c'est lui qui pousse le pied de
+   page vers le bas. `min-width: 0` empeche un contenu large (tableau, bloc de
+   code) d'elargir la colonne au-dela de la fenetre. */
+main {
+  flex: 1;
+  min-width: 0;
+  padding-block: var(--e-5) var(--e-3);
+}
 
 .bouton {
   display: inline-flex;
