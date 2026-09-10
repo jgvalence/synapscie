@@ -23,7 +23,6 @@
   --trait: #86898e;
   --trait-leger: #dfe3e6;
   --focus: #16191d;
-  --lien-visite: #6b3a86;
 
   /* Primaire, par usage :
      --primaire-lisible : ecrire ou tracer un trait sur --fond
@@ -91,7 +90,6 @@
     --trait: #79818a;
     --trait-leger: #313940;
     --focus: #f2f5f7;
-    --lien-visite: #cba6e8;
 
     --primaire-lisible: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
     --primaire-fort: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
@@ -120,7 +118,6 @@
   --trait: #79818a;
   --trait-leger: #313940;
   --focus: #f2f5f7;
-  --lien-visite: #cba6e8;
 
   --primaire-lisible: color-mix(in srgb, var(--marque-primaire) 55%, #ffffff);
   --primaire-fort: color-mix(in srgb, var(--marque-primaire) 40%, #ffffff);
@@ -179,9 +176,17 @@ h3 { font-size: var(--t-l); }
 p, ul, ol { margin: 0 0 var(--e-3); }
 :is(p, ul, ol):last-child { margin-bottom: 0; }
 
-a { color: var(--lien); text-underline-offset: 0.15em; }
-a:visited { color: var(--lien-visite); }
-a:hover { text-decoration-thickness: 2px; }
+/* `:where()` annule la specificite : n'importe quelle classe de composant
+   (.bouton, .entete__logo, .nav a...) l'emporte sans avoir a surenchevrir.
+   Sans lui, une regle comme `a:visited` (0,1,1) battait `.bouton--plein`
+   (0,1,0) et repeignait le texte des boutons. */
+:where(a) { color: var(--lien); text-underline-offset: 0.15em; }
+:where(a:hover) { text-decoration-thickness: 2px; }
+
+/* Pas de couleur distincte pour les liens deja visites : ni le RGAA ni les
+   WCAG ne l'exigent, le site n'a qu'une dizaine de pages, et le violet des
+   navigateurs tire le rendu vers la page non stylee. Le soulignement suffit a
+   signaler un lien. */
 
 img { max-width: 100%; height: auto; display: block; }
 

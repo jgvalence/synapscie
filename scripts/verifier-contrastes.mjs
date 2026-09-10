@@ -282,7 +282,6 @@ const COUPLES = [
   ['Texte secondaire (pied de page, legendes)', 'texte-doux', 'fond-doux', TEXTE],
   ['Lien dans le texte', 'lien', 'fond', TEXTE],
   ['Lien dans le pied de page', 'lien', 'fond-doux', TEXTE],
-  ['Lien deja visite', 'lien-visite', 'fond', TEXTE],
   ['Libelle du bouton plein', 'primaire-aplat-texte', 'primaire-aplat', TEXTE],
   ['Libelle du bouton plein au survol', 'primaire-aplat-texte', 'primaire-aplat-survol', TEXTE],
   ['Lien d-evitement au clavier', 'primaire-aplat-texte', 'primaire-aplat', TEXTE],
