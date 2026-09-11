@@ -45,10 +45,6 @@ const LIENS = [
           ateliers, rencontres, expositions et outils libres, pensés pour
           circuler au-delà des lieux savants.
         </p>
-        <p class="hero__actions">
-          <a class="bouton bouton--plein" href={lien('/projets/')}>Découvrir nos projets</a>
-          {ecrire && <a class="bouton bouton--contour" href={ecrire}>Nous contacter</a>}
-        </p>
       </div>
       <Picture
         class="hero__image"
@@ -98,12 +94,6 @@ const LIENS = [
     font-size: var(--t-l);
     color: var(--texte-doux);
     max-width: 36rem;
-  }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--e-2);
-    margin-top: var(--e-4);
   }
   .hero :global(.hero__image) {
     width: 100%;

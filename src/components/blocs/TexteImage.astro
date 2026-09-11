@@ -34,7 +34,7 @@ const {
 
 const Titre = niveau;
 ---
-<section class:list={['bloc', 'texte-image', `texte-image--${position_image}`]}>
+<section class:list={['bloc', 'texte-image', `texte-image--${position_image}`, { 'texte-image--rond': rond }]}>
   <figure class:list={['texte-image__media', { 'texte-image__media--rond': rond }]}>
     <Picture
       src={image}
@@ -71,6 +71,16 @@ const Titre = niveau;
 
     .texte-image--droite .texte-image__media {
       order: 2;
+    }
+
+    /* Un portrait rond ne fait que 15rem : dans une moitie de grille, il
+       flottait loin de son texte. Colonne a sa taille, texte borne a la
+       largeur de lecture, pour que chaque portrait reste accole a sa bio. */
+    .texte-image--rond {
+      grid-template-columns: 15rem minmax(0, var(--largeur-texte));
+    }
+    .texte-image--rond.texte-image--droite {
+      grid-template-columns: minmax(0, var(--largeur-texte)) 15rem;
     }
   }
 
